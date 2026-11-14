@@ -10,6 +10,10 @@ on:
 permissions:
   contents: write
 
+env:
+  NPM_CONFIG_LEGACY_PEER_DEPS: "true"
+  EXPO_NO_GIT_STATUS: "1"
+
 jobs:
   build:
     name: Compile Android APK
@@ -35,13 +39,19 @@ jobs:
           echo "ANDROID_HOME=$ANDROID_HOME"
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-      - name: Install NPM Dependencies
-        run: npm install --legacy-peer-deps
+      - name: Install NPM Dependencies & Align Expo SDK Versions
+        run: |
+          npm install
+          npx expo install --fix
 
       - name: Generate Native Android Project (Expo Prebuild)
-        env:
-          EXPO_NO_GIT_STATUS: 1
         run: npx expo prebuild --platform android --clean
+
+      - name: Configure Gradle Properties for Stable Build
+        run: |
+          sed -i 's/newArchEnabled=true/newArchEnabled=false/g' android/gradle.properties || true
+          echo "" >> android/gradle.properties
+          echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m" >> android/gradle.properties
 
       - name: Grant Execute Permission to Gradlew
         run: chmod +x android/gradlew
