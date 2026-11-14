@@ -30,8 +30,10 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Verify Pre-installed Android SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Install NPM Dependencies
         run: npm install --legacy-peer-deps
@@ -68,12 +70,6 @@ jobs:
           body: |
             ### BL-e Operator - Android APK
             Automated cloud build for **BL-e Operator**.
-            
-            **Features:**
-            - Live BLE Scanner with RSSI signal meter & name filter
-            - Smart Light & Multi-Channel Relay Controller (ELK-BLEDOM, HM-10/FFE0, Nordic UART)
-            - GATT Service & Characteristic Explorer (auto-discovers writable UUIDs)
-            - Raw HEX & ASCII Packet Transmitter with live TX/RX console
           files: android/app/build/outputs/apk/debug/BL-e-Operator.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
