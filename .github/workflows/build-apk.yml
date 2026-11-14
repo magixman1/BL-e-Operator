@@ -7,6 +7,9 @@ on:
       - 'v*'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build APK
@@ -20,7 +23,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
       - name: Setup Java Development Kit (JDK 17)
         uses: actions/setup-java@v4
@@ -32,9 +34,11 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Install Project Dependencies
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
       - name: Generate Android Native Project (Expo Prebuild)
+        env:
+          EXPO_NO_GIT_STATUS: 1
         run: npx expo prebuild --platform android --clean
 
       - name: Grant Execute Permission to Gradle
