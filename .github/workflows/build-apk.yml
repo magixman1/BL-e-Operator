@@ -16,7 +16,7 @@ env:
 
 jobs:
   build:
-    name: Compile Android APK
+    name: Compile Standalone Android APK
     runs-on: ubuntu-latest
 
     steps:
@@ -47,7 +47,7 @@ jobs:
       - name: Generate Native Android Project (Expo Prebuild)
         run: npx expo prebuild --platform android --clean
 
-      - name: Configure Gradle Properties for Stable Build
+      - name: Configure Gradle Properties for Standalone Build
         run: |
           sed -i 's/newArchEnabled=true/newArchEnabled=false/g' android/gradle.properties || true
           echo "" >> android/gradle.properties
@@ -56,19 +56,19 @@ jobs:
       - name: Grant Execute Permission to Gradlew
         run: chmod +x android/gradlew
 
-      - name: Build Debug APK
+      - name: Build Standalone Release APK (Bundles JS Inside APK)
         run: |
           cd android
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          ./gradlew assembleRelease -x lint -x lintVitalRelease --no-daemon --stacktrace
 
       - name: Rename APK for Easy Download
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk android/app/build/outputs/apk/debug/BL-e-Operator.apk
+        run: cp android/app/build/outputs/apk/release/app-release.apk android/app/build/outputs/apk/release/BL-e-Operator.apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: BL-e-Operator-APK
-          path: android/app/build/outputs/apk/debug/BL-e-Operator.apk
+          path: android/app/build/outputs/apk/release/BL-e-Operator.apk
           retention-days: 30
 
       - name: Publish APK to GitHub Releases
@@ -78,8 +78,8 @@ jobs:
           tag_name: ${{ github.ref_name == 'main' && 'v1.0.0' || github.ref_name }}
           name: BL-e Operator Latest APK
           body: |
-            ### BL-e Operator - Android APK
-            Automated cloud build for **BL-e Operator**.
-          files: android/app/build/outputs/apk/debug/BL-e-Operator.apk
+            ### BL-e Operator - Standalone Android APK
+            Automated standalone release build for **BL-e Operator** with embedded JS bundle.
+          files: android/app/build/outputs/apk/release/BL-e-Operator.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
