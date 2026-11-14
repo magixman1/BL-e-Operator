@@ -1,24 +1,25 @@
 {
   "expo": {
-    "name": "bl-operator",
-    "slug": "bl-operator",
-    "version": "1.0.0",
+    "name": "BL-e Operator",
+    "slug": "bl-e-operator",
+    "version": "2.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "splash": {
-      "backgroundColor": "#090d16"
+      "backgroundColor": "#070A12"
     },
     "android": {
-      "package": "com.bloperator.app",
+      "package": "com.bleoperator.console",
       "adaptiveIcon": {
-        "backgroundColor": "#090d16"
+        "backgroundColor": "#070A12"
       },
       "permissions": [
         "android.permission.BLUETOOTH",
         "android.permission.BLUETOOTH_ADMIN",
         "android.permission.BLUETOOTH_SCAN",
         "android.permission.BLUETOOTH_CONNECT",
-        "android.permission.ACCESS_FINE_LOCATION"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION"
       ]
     },
     "plugins": [
@@ -27,7 +28,7 @@
         {
           "isBackgroundEnabled": false,
           "modes": ["central"],
-          "bluetoothAlwaysPermission": "Allow bl-operator to scan and control Bluetooth devices."
+          "bluetoothAlwaysPermission": "Allow BL-e Operator to scan, connect, and control BLE devices."
         }
       ]
     ]

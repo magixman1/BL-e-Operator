@@ -1,37 +1,18 @@
-# bl-operator
+# BL-e Operator
 
-Mobile application for scanning, connecting to, and controlling Bluetooth Low Energy (BLE) smart devices and lights.
+Universal Bluetooth Low Energy (BLE) Hardware Console & Smart Device Controller for Android.
 
-## Project Structure
+## Key Features
+1. **Radar Scanner**: Live BLE peripheral discovery with RSSI signal strength bars, dBm readout, and raw beacon filtering.
+2. **Smart Light & Multi-Channel Relay Controller**:
+   - Built-in protocol presets for **Generic BLE (HM-10/JDY-08 `FFE0`)**, **ELK-BLEDOM / Lotus Lantern (`FFF0`)**, and **Nordic UART (`6E400001` for ESP32/Arduino)**.
+   - 8-Swatch RGB Matrix & 5-Step Brightness Controller.
+   - 4-Channel BLE Relay Switchboard (`CH1` - `CH4`).
+3. **GATT Explorer & Raw Packet Transmitter**:
+   - Automatically enumerates all writable GATT Services & Characteristics upon connecting.
+   - Send custom **HEX** or **ASCII** byte payloads with live TX/RX telemetry logging.
 
-```
-bl-operator/
-├── .github/
-│   └── workflows/
-│       └── build-apk.yml    # Automated cloud APK build workflow
-├── .gitignore
-├── app.json                 # Expo & Android BLE permissions configuration
-├── App.js                   # Application UI, BLE scanner, and GATT controller
-├── index.js                 # App entry point
-├── package.json             # NPM dependencies and scripts
-└── README.md
-```
-
-## How to Build the APK on GitHub Cloud
-
-1. Initialize git and push this repository to GitHub:
-   ```bash
-   git init
-   git add .
-   git commit -m "feat: initial commit for bl-operator"
-   git branch -M main
-   git remote add origin https://github.com/<YOUR_USERNAME>/<YOUR_REPOSITORY>.git
-   git push -u origin main
-   ```
-
-2. Go to your repository on GitHub.
-3. Click on the **Actions** tab.
-4. Select **Build Android APK** from the left sidebar and click **Run workflow**.
-5. Once the build finishes:
-   - Under **Artifacts** at the bottom of the workflow run, download `bl-operator-debug-apk`.
-   - If triggered via a Git tag (e.g. `git tag v1.0.0 && git push origin v1.0.0`), the APK is published directly as an asset on the **Releases** page.
+## Cloud APK Compilation on GitHub
+1. Extract `BL-e-Operator.zip` and upload all files directly to the root of your GitHub repository.
+2. Open the **Actions** tab on GitHub and trigger **Build BL-e Operator APK**.
+3. Download `BL-e-Operator.apk` from the workflow **Artifacts** or the **Releases** section.
