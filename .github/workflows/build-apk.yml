@@ -1,8 +1,8 @@
-name: Build Android APK
+name: Build BL-e Operator APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
     tags:
       - 'v*'
   workflow_dispatch:
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build:
-    name: Build APK
+    name: Compile Android APK
     runs-on: ubuntu-latest
 
     steps:
@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: 20
 
-      - name: Setup Java Development Kit (JDK 17)
+      - name: Setup Java JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -33,42 +33,47 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Project Dependencies
+      - name: Install NPM Dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Generate Android Native Project (Expo Prebuild)
+      - name: Generate Native Android Project (Expo Prebuild)
         env:
           EXPO_NO_GIT_STATUS: 1
         run: npx expo prebuild --platform android --clean
 
-      - name: Grant Execute Permission to Gradle
+      - name: Grant Execute Permission to Gradlew
         run: chmod +x android/gradlew
 
-      - name: Compile Android Debug APK
+      - name: Build Debug APK
         run: |
           cd android
           ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - name: Upload APK as Workflow Artifact
+      - name: Rename APK for Easy Download
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk android/app/build/outputs/apk/debug/BL-e-Operator.apk
+
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: bl-operator-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 14
+          name: BL-e-Operator-APK
+          path: android/app/build/outputs/apk/debug/BL-e-Operator.apk
+          retention-days: 30
 
-      - name: Create GitHub Release and Upload APK
+      - name: Publish APK to GitHub Releases
         if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name || 'v1.0.0-apk' }}
-          name: bl-operator Release ${{ github.ref_name || 'v1.0.0' }}
+          tag_name: ${{ github.ref_name == 'main' && 'v1.0.0' || github.ref_name }}
+          name: BL-e Operator Latest APK
           body: |
-            ### bl-operator Android APK
-            Automated cloud build for `bl-operator`.
+            ### BL-e Operator - Android APK
+            Automated cloud build for **BL-e Operator**.
             
-            **Installation:**
-            1. Download `app-debug.apk` attached below.
-            2. Enable "Install from unknown sources" on your Android device if prompted.
-          files: android/app/build/outputs/apk/debug/app-debug.apk
+            **Features:**
+            - Live BLE Scanner with RSSI signal meter & name filter
+            - Smart Light & Multi-Channel Relay Controller (ELK-BLEDOM, HM-10/FFE0, Nordic UART)
+            - GATT Service & Characteristic Explorer (auto-discovers writable UUIDs)
+            - Raw HEX & ASCII Packet Transmitter with live TX/RX console
+          files: android/app/build/outputs/apk/debug/BL-e-Operator.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
